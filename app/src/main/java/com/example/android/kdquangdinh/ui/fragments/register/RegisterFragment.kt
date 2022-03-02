@@ -47,7 +47,6 @@ class RegisterFragment : Fragment() {
             mainViewModel.registerResult.observe(viewLifecycleOwner, {response ->
                 when (response) {
                     is NetworkResult.Success -> {
-//
                         findNavController().navigate(R.id.action_registerFragment_to_productsFragment)
                     }
                     is NetworkResult.Error -> {
