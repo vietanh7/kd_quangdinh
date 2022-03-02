@@ -38,6 +38,10 @@ class ProductsFragment : Fragment() {
             findNavController().navigate(R.id.action_productsFragment_to_registerFragment)
         }
 
+        binding.loginBtn.setOnClickListener {
+            findNavController().navigate(R.id.action_productsFragment_to_loginFragment)
+        }
+
         return binding.root
     }
 

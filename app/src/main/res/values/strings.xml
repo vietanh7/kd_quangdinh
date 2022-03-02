@@ -9,5 +9,6 @@
     <string name="sku">sku</string>
     <string name="product_name">Product name</string>
     <string name="action">Action</string>
-    <string name="register_faile_error">Fail to register!</string>
+    <string name="register_failed_error">Fail to register!</string>
+    <string name="login_failed_error">Fail to login!</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.example.android.kdquangdinh.ui.fragments.register
+package com.example.android.kdquangdinh.ui.fragments.login
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -9,71 +9,41 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.android.kdquangdinh.R
+import com.example.android.kdquangdinh.databinding.FragmentLoginBinding
 import com.example.android.kdquangdinh.databinding.FragmentRegisterBinding
 import com.example.android.kdquangdinh.util.NetworkResult
 import com.example.android.kdquangdinh.viewmodels.MainViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 
 /**
  * A simple [Fragment] subclass.
- * Use the [RegisterFragment.newInstance] factory method to
+ * Use the [LoginFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
+class LoginFragment : Fragment() {
 
-@AndroidEntryPoint
-class RegisterFragment : Fragment() {
-
-    private var _binding: FragmentRegisterBinding? = null
+    private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
     private lateinit var mainViewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mainViewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
-
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        _binding = FragmentLoginBinding.inflate(inflater, container, false)
 
-        _binding = FragmentRegisterBinding.inflate(inflater, container, false)
 
-
-        binding.registerButton.setOnClickListener {
-            val email = binding.emailEdittext.text.toString()
-            val password = binding.passwordEdittext.text.toString()
-            mainViewModel.register(email, password)
-            mainViewModel.registerResult.observe(viewLifecycleOwner, {response ->
-                when (response) {
-                    is NetworkResult.Success -> {
-                        mainViewModel.login(email, password)
-//                        findNavController().navigate(R.id.action_registerFragment_to_productsFragment)
-                    }
-                    is NetworkResult.Error -> {
-                        Toast.makeText(
-                            requireContext(),
-                            response.message,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    is NetworkResult.Loading -> {
-//
-                    }
-                }
-            })
-
+        binding.loginButton.setOnClickListener {
+            mainViewModel.login(binding.emailEdittext.text.toString(), binding.passwordEdittext.text.toString())
             mainViewModel.loginResult.observe(viewLifecycleOwner, {response ->
                 when (response) {
                     is NetworkResult.Success -> {
-                        Toast.makeText(
-                            requireContext(),
-                            "Welcome $email",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        findNavController().navigate(R.id.action_registerFragment_to_productsFragment)
+                        findNavController().navigate(R.id.action_loginFragment_to_productsFragment)
                     }
                     is NetworkResult.Error -> {
                         Toast.makeText(
@@ -91,6 +61,5 @@ class RegisterFragment : Fragment() {
 
         return binding.root
     }
-
 
 }

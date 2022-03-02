@@ -1,5 +1,6 @@
 package com.example.android.kdquangdinh.data.network
 
+import com.example.android.kdquangdinh.models.LoginResult
 import com.example.android.kdquangdinh.models.RegisterResult
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -13,5 +14,12 @@ interface ProductsApi {
         @Field("email") email: String,
         @Field("password") password: String
     ): Response<RegisterResult>
+
+    @FormUrlEncoded
+    @POST("auth/login")
+    suspend fun login(
+        @Field("email") email: String,
+        @Field("password") password: String
+    ): Response<LoginResult>
 
 }
