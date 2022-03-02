@@ -1,6 +1,7 @@
 package com.example.android.kdquangdinh.ui.fragments.login
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import com.example.android.kdquangdinh.databinding.FragmentLoginBinding
 import com.example.android.kdquangdinh.databinding.FragmentRegisterBinding
 import com.example.android.kdquangdinh.util.NetworkResult
 import com.example.android.kdquangdinh.viewmodels.MainViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
 
 /**
@@ -20,6 +22,7 @@ import com.example.android.kdquangdinh.viewmodels.MainViewModel
  * Use the [LoginFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
+@AndroidEntryPoint
 class LoginFragment : Fragment() {
 
     private var _binding: FragmentLoginBinding? = null
@@ -36,13 +39,22 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
+//        binding.life = this
 
 
         binding.loginButton.setOnClickListener {
-            mainViewModel.login(binding.emailEdittext.text.toString(), binding.passwordEdittext.text.toString())
+            val email = binding.emailEdittext.text.toString()
+            val password = binding.passwordEdittext.text.toString()
+            mainViewModel.login(email, password)
             mainViewModel.loginResult.observe(viewLifecycleOwner, {response ->
+                Log.d("HAHA", "changed")
                 when (response) {
                     is NetworkResult.Success -> {
+                        Toast.makeText(
+                            requireContext(),
+                            "Welcome $email",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         findNavController().navigate(R.id.action_loginFragment_to_productsFragment)
                     }
                     is NetworkResult.Error -> {
