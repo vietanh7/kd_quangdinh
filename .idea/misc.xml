@@ -4,11 +4,12 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/Admin/Desktop/kd_quangdinh/app/src/main/res/layout/activity_main.xml" value="0.17552083333333332" />
+        <entry key="..\:/Users/Admin/Desktop/kd_quangdinh/app/src/main/res/layout/add_product_layout.xml" value="0.25" />
         <entry key="..\:/Users/Admin/Desktop/kd_quangdinh/app/src/main/res/layout/fragment_login.xml" value="0.1" />
-        <entry key="..\:/Users/Admin/Desktop/kd_quangdinh/app/src/main/res/layout/fragment_products.xml" value="0.17552083333333332" />
+        <entry key="..\:/Users/Admin/Desktop/kd_quangdinh/app/src/main/res/layout/fragment_products.xml" value="0.25" />
         <entry key="..\:/Users/Admin/Desktop/kd_quangdinh/app/src/main/res/layout/fragment_register.xml" value="0.165" />
         <entry key="..\:/Users/Admin/Desktop/kd_quangdinh/app/src/main/res/layout/header_row_layout.xml" value="0.165" />
-        <entry key="..\:/Users/Admin/Desktop/kd_quangdinh/app/src/main/res/layout/product_row_layout.xml" value="0.1" />
+        <entry key="..\:/Users/Admin/Desktop/kd_quangdinh/app/src/main/res/layout/product_row_layout.xml" value="0.25" />
       </map>
     </option>
   </component>

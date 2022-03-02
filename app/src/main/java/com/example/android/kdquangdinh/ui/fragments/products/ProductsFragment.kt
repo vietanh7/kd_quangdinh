@@ -5,11 +5,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.android.kdquangdinh.R
+import com.example.android.kdquangdinh.adapters.ProductListener
+import com.example.android.kdquangdinh.adapters.ProductsAdapter
 import com.example.android.kdquangdinh.databinding.FragmentProductsBinding
+import com.example.android.kdquangdinh.util.AddProductDialogFragment
+import com.example.android.kdquangdinh.util.NetworkResult
 import com.example.android.kdquangdinh.viewmodels.MainViewModel
 
 
@@ -23,6 +29,7 @@ class ProductsFragment : Fragment() {
     private var _binding: FragmentProductsBinding? = null
     private val binding get() = _binding!!
     private lateinit var mainViewModel: MainViewModel
+    private val mAdapter by lazy { ProductsAdapter(null) }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,10 +56,45 @@ class ProductsFragment : Fragment() {
         }
 
         mainViewModel.readToken.asLiveData().observe(viewLifecycleOwner, { value ->
+            mainViewModel.token = value
+            if (!value.isNullOrEmpty()) {
+                binding.addProductBtn.visibility = View.VISIBLE
+            }
+            mainViewModel.getAllProducts(value)
+        })
 
+        setupRecyclerView()
+
+        mainViewModel.getAllProductsResult.observe(viewLifecycleOwner, {response ->
+            when (response) {
+                is NetworkResult.Success -> {
+                    mAdapter.addHeaderAndSubmitList(response.data, mainViewModel.token.isNullOrEmpty())
+//                        findNavController().navigate(R.id.action_registerFragment_to_productsFragment)
+                }
+                is NetworkResult.Error -> {
+//                    Toast.makeText(
+//                        requireContext(),
+//                        response.message,
+//                        Toast.LENGTH_SHORT
+//                    ).show()
+                }
+                is NetworkResult.Loading -> {
+//
+                }
+            }
+        })
+
+        binding.addProductBtn.setOnClickListener({
+            AddProductDialogFragment().show(
+                childFragmentManager, AddProductDialogFragment.TAG)
         })
 
         return binding.root
+    }
+
+    private fun setupRecyclerView() {
+        binding.recyclerview.adapter = mAdapter
+        binding.recyclerview.layoutManager = LinearLayoutManager(requireContext())
     }
 
 

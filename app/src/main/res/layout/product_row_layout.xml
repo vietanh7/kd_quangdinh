@@ -4,9 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="android.view.View"/>
         <variable
-            name="sleep"
+            name="product"
             type="com.example.android.kdquangdinh.models.Product"/>
+        <variable
+            name="areButtonsDisabled"
+            type="java.lang.Boolean"/>
         <variable
             name="clickListener"
             type="com.example.android.kdquangdinh.adapters.ProductListener" />
@@ -25,7 +29,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
-            android:text="1"
+            android:text="@{product.sku}"
             android:textColor="@color/black"
             android:textSize="25sp"
             android:textStyle="bold"
@@ -35,28 +39,39 @@
 
         <TextView
             android:id="@+id/textView2"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Cocacola"
+            android:text="@{product.productName}"
             android:textColor="@color/black"
             android:textSize="25sp"
             android:textStyle="bold"
+            android:textAlignment="center"
+            tools:text="asddasdasdasd"
             app:layout_constraintBottom_toBottomOf="@+id/textView"
-            app:layout_constraintEnd_toStartOf="@+id/textView3"
+            app:layout_constraintEnd_toStartOf="@+id/edit_btn"
             app:layout_constraintStart_toEndOf="@+id/textView"
             app:layout_constraintTop_toTopOf="@+id/textView" />
 
-        <TextView
-            android:id="@+id/textView3"
+        <Button
+            android:id="@+id/delete_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:text="action"
-            android:textColor="@color/black"
-            android:textSize="25sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/textView2"
+            android:layout_marginEnd="8dp"
+            android:text="Delete"
+            android:visibility="@{areButtonsDisabled? View.GONE : View.VISIBLE}"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/textView2" />
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/edit_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:visibility="@{areButtonsDisabled? View.GONE : View.VISIBLE}"
+            android:text="Edit"
+            app:layout_constraintEnd_toStartOf="@+id/delete_btn"
+            app:layout_constraintTop_toTopOf="@+id/delete_btn" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.android.kdquangdinh.R
 import com.example.android.kdquangdinh.data.DataStoreRepository
 import com.example.android.kdquangdinh.data.Repository
+import com.example.android.kdquangdinh.models.GetAllProductsResult
 import com.example.android.kdquangdinh.models.LoginResult
 import com.example.android.kdquangdinh.models.RegisterResult
 import com.example.android.kdquangdinh.util.NetworkResult
@@ -25,10 +26,12 @@ class MainViewModel @Inject constructor(
     application: Application
 ) : AndroidViewModel(application) {
 
+    var token: String? = ""
 
     /** RETROFIT */
     var registerResult: MutableLiveData<NetworkResult<RegisterResult>> = MutableLiveData()
     var loginResult: MutableLiveData<NetworkResult<LoginResult>> = MutableLiveData()
+    var getAllProductsResult: MutableLiveData<NetworkResult<GetAllProductsResult>> = MutableLiveData()
 
     val readToken = dataStoreRepository.readToken
 
@@ -38,6 +41,43 @@ class MainViewModel @Inject constructor(
 
     fun login(email: String, password: String) = viewModelScope.launch {
         loginSafeCall(email, password)
+    }
+
+    fun getAllProducts(token: String?) = viewModelScope.launch {
+        getAllProductsSafeCall(token)
+    }
+
+    private suspend fun getAllProductsSafeCall(token: String?) {
+        getAllProductsResult.value = NetworkResult.Loading()
+
+        try {
+
+            val response = repository.remote.getAllProducts(token)
+            getAllProductsResult.value = handleGetAllProductsResponse(response)
+
+
+        } catch (e: Exception) {
+            getAllProductsResult.value =
+                NetworkResult.Error(getApplication<Application>().resources.getString(R.string.get_all_products_failed_error))
+        }
+    }
+
+    private fun handleGetAllProductsResponse(response: Response<GetAllProductsResult>): NetworkResult<GetAllProductsResult>? {
+        when {
+
+            response.isSuccessful -> {
+                val result = response.body()
+                if (!result.isNullOrEmpty()) {
+                    return NetworkResult.Success(result)
+                } else {
+                    return NetworkResult.Error(getApplication<Application>().resources.getString(R.string.get_all_products_failed_error))
+                }
+            }
+            else -> {
+                //error message in response is empty so we show default error message
+                return NetworkResult.Error(getApplication<Application>().resources.getString(R.string.get_all_products_failed_error))
+            }
+        }
     }
 
     private fun saveToken(token: String?) =

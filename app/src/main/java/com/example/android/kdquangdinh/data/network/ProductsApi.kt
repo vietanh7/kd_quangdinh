@@ -1,5 +1,6 @@
 package com.example.android.kdquangdinh.data.network
 
+import com.example.android.kdquangdinh.models.GetAllProductsResult
 import com.example.android.kdquangdinh.models.LoginResult
 import com.example.android.kdquangdinh.models.RegisterResult
 import okhttp3.RequestBody
@@ -21,5 +22,13 @@ interface ProductsApi {
         @Field("email") email: String,
         @Field("password") password: String
     ): Response<LoginResult>
+
+
+    @GET("items")
+    suspend fun getAllProducts(
+        @Header("Authorization") authHeader: String?
+    ): Response<GetAllProductsResult>
+
+
 
 }

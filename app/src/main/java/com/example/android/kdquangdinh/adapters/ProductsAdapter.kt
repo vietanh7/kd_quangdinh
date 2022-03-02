@@ -18,16 +18,17 @@ import kotlinx.coroutines.withContext
 private val ITEM_VIEW_TYPE_HEADER = 0
 private val ITEM_VIEW_TYPE_ITEM = 1
 
-class ProductsAdapter(val clickListener: ProductListener) :
+class ProductsAdapter(val clickListener: ProductListener?) :
     ListAdapter<DataItem, RecyclerView.ViewHolder>(ProductDiffCallback()){
+
 
     private val adapterScope = CoroutineScope(Dispatchers.Default)
 
-    fun addHeaderAndSubmitList(list: List<Product>?) {
+    fun addHeaderAndSubmitList(list: List<Product>?, areButtonsDisabled: Boolean) {
         adapterScope.launch {
             val items = when (list) {
                 null -> listOf(DataItem.Header)
-                else -> listOf(DataItem.Header) + list.map { DataItem.ProductItem(it) }
+                else -> listOf(DataItem.Header) + list.map { DataItem.ProductItem(it, areButtonsDisabled) }
             }
             withContext(Dispatchers.Main) {
                 submitList(items)
@@ -54,9 +55,10 @@ class ProductsAdapter(val clickListener: ProductListener) :
 
     class ViewHolder private constructor(val binding: ProductRowLayoutBinding) : RecyclerView.ViewHolder(binding.root){
 
-        fun bind(item: Product, clickListener: ProductListener) {
-            binding.sleep = item
-            binding.clickListener = clickListener
+        fun bind(item: Product, areButtonsDisabled: Boolean) {
+            binding.product = item
+            binding.areButtonsDisabled = areButtonsDisabled
+//            binding.clickListener = clickListener
             binding.executePendingBindings()
         }
 
@@ -81,7 +83,7 @@ class ProductsAdapter(val clickListener: ProductListener) :
         when (holder) {
             is ViewHolder -> {
                 val productItem = getItem(position) as DataItem.ProductItem
-                holder.bind(productItem.product, clickListener)
+                holder.bind(productItem.product, productItem.areButtonsDisabled)
             }
         }
     }
@@ -103,7 +105,7 @@ class ProductListener(val updateListener: (productId: Long?) -> Unit, val remove
 }
 
 sealed class DataItem {
-    data class ProductItem(val product: Product): DataItem() {
+    data class ProductItem(val product: Product, val areButtonsDisabled: Boolean ): DataItem() {
         override val id = product.id
     }
 
@@ -112,4 +114,5 @@ sealed class DataItem {
     }
 
     abstract val id: Long?
+//    var areButtonsDisabled: Boolean = true
 }

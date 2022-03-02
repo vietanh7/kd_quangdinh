@@ -2,6 +2,7 @@ package com.example.android.kdquangdinh.data
 
 import android.util.Log
 import com.example.android.kdquangdinh.data.network.ProductsApi
+import com.example.android.kdquangdinh.models.GetAllProductsResult
 import com.example.android.kdquangdinh.models.LoginResult
 import com.example.android.kdquangdinh.models.RegisterResult
 import okhttp3.MultipartBody
@@ -18,5 +19,9 @@ class RemoteDataSource @Inject constructor(
 
     suspend fun login(email: String, password: String): Response<LoginResult> {
         return productsApi.login(email, password)
+    }
+
+    suspend fun getAllProducts(token: String?): Response<GetAllProductsResult> {
+        return productsApi.getAllProducts("Bearer " + token)
     }
 }
