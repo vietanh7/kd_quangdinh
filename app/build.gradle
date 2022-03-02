@@ -1,10 +1,7 @@
-
 apply plugin: 'com.android.application'
+apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'dagger.hilt.android.plugin'
-
-
 
 android {
     compileSdk 31
@@ -81,4 +78,8 @@ dependencies {
 
     // Gson
     implementation 'com.google.code.gson:gson:2.8.7'
+}
+
+kapt {
+    correctErrorTypes true
 }
