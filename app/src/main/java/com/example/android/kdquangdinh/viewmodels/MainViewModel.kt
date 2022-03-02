@@ -58,6 +58,7 @@ class MainViewModel @Inject constructor(
 
             }
             else -> {
+                //error message in response is empty so we show default error message
                 return NetworkResult.Error(getApplication<Application>().resources.getString(R.string.register_faile_error))
             }
         }
