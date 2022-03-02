@@ -6,11 +6,13 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.android.kdquangdinh.R
+import com.example.android.kdquangdinh.data.DataStoreRepository
 import com.example.android.kdquangdinh.data.Repository
 import com.example.android.kdquangdinh.models.LoginResult
 import com.example.android.kdquangdinh.models.RegisterResult
 import com.example.android.kdquangdinh.util.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.lang.Exception
@@ -19,6 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val repository: Repository,
+    private val dataStoreRepository: DataStoreRepository,
     application: Application
 ) : AndroidViewModel(application) {
 
@@ -26,6 +29,8 @@ class MainViewModel @Inject constructor(
     /** RETROFIT */
     var registerResult: MutableLiveData<NetworkResult<RegisterResult>> = MutableLiveData()
     var loginResult: MutableLiveData<NetworkResult<LoginResult>> = MutableLiveData()
+
+    val readToken = dataStoreRepository.readToken
 
     fun register(email: String, password: String) = viewModelScope.launch {
         registerSafeCall(email, password)
@@ -35,9 +40,14 @@ class MainViewModel @Inject constructor(
         loginSafeCall(email, password)
     }
 
+    private fun saveToken(token: String?) =
+        viewModelScope.launch(Dispatchers.IO) {
+            dataStoreRepository.saveToken(token)
+        }
+
     private suspend fun loginSafeCall(email: String, password: String) {
         Log.d("HAHA", "LOGIN")
-        loginResult.value =NetworkResult.Loading()
+        loginResult.value = NetworkResult.Loading()
 
         try {
 
@@ -46,7 +56,8 @@ class MainViewModel @Inject constructor(
 
 
         } catch (e: Exception) {
-            loginResult.value = NetworkResult.Error(getApplication<Application>().resources.getString(R.string.login_failed_error))
+            loginResult.value =
+                NetworkResult.Error(getApplication<Application>().resources.getString(R.string.login_failed_error))
         }
     }
 
@@ -57,6 +68,7 @@ class MainViewModel @Inject constructor(
             response.isSuccessful -> {
                 val loginResult = response.body()
                 if (loginResult?.token != null) {
+                    saveToken(loginResult?.token)
                     return NetworkResult.Success(loginResult)
                 } else {
                     return NetworkResult.Error(getApplication<Application>().resources.getString(R.string.login_failed_error))
@@ -72,7 +84,7 @@ class MainViewModel @Inject constructor(
 
     private suspend fun registerSafeCall(email: String, password: String) {
         Log.d("HAHA", "REGISTER")
-        registerResult.value =NetworkResult.Loading()
+        registerResult.value = NetworkResult.Loading()
 
         try {
 
@@ -81,7 +93,8 @@ class MainViewModel @Inject constructor(
 
 
         } catch (e: Exception) {
-            registerResult.value = NetworkResult.Error(getApplication<Application>().resources.getString(R.string.register_failed_error))
+            registerResult.value =
+                NetworkResult.Error(getApplication<Application>().resources.getString(R.string.register_failed_error))
         }
 
     }

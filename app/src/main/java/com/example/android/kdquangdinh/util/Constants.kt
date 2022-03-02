@@ -10,6 +10,9 @@ class Constants {
         const val DATABASE_NAME = "products_database"
         const val PRODUCTS_TABLE = "products_table"
 
+        const val PREFERENCES_NAME = "products_preferences"
+        const val PREFERENCES_TOKEN = "token"
+
     }
 
 }

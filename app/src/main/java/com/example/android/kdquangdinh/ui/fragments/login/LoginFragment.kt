@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.findNavController
 import com.example.android.kdquangdinh.R
 import com.example.android.kdquangdinh.databinding.FragmentLoginBinding
@@ -52,7 +53,7 @@ class LoginFragment : Fragment() {
                     is NetworkResult.Success -> {
                         Toast.makeText(
                             requireContext(),
-                            "Welcome $email",
+                            "Welcome $email}",
                             Toast.LENGTH_SHORT
                         ).show()
                         findNavController().navigate(R.id.action_loginFragment_to_productsFragment)
@@ -69,6 +70,8 @@ class LoginFragment : Fragment() {
                     }
                 }
             })
+
+//
         }
 
         return binding.root
