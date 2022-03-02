@@ -12,6 +12,6 @@ data class Product (
     @SerializedName("status"       ) var status      : String? = null,
     @SerializedName("updated_at"   ) var updatedAt   : String? = null,
     @SerializedName("created_at"   ) var createdAt   : String? = null,
-    @SerializedName("id"           ) var id          : Int?    = null
+    @SerializedName("id"           ) var id          : Long?    = null
 
 )
