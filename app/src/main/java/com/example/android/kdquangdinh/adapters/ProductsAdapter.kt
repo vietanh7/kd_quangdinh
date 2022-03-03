@@ -78,6 +78,7 @@ class ProductsAdapter(val clickListener: ProductListener) :
 //            currentItems = currentItems + listOf(DataItem.ProductItem(product, areButtonsDisabled))
             withContext(Dispatchers.Main) {
                 submitList(currentItems)
+                notifyDataSetChanged()
             }
         }
     }

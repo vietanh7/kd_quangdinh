@@ -108,6 +108,11 @@ class ProductsFragment : Fragment() {
             when (response) {
                 is NetworkResult.Success -> {
                     mAdapter.addProduct(response.data!!)
+                    Toast.makeText(
+                        requireContext(),
+                        "Add product successfully!",
+                        Toast.LENGTH_SHORT
+                    ).show()
 //                        findNavController().navigate(R.id.action_registerFragment_to_productsFragment)
                 }
                 is NetworkResult.Error -> {
@@ -129,6 +134,11 @@ class ProductsFragment : Fragment() {
                 is NetworkResult.Success -> {
                     if (response.data != null)
                         mAdapter.updateProduct(response.data)
+                    Toast.makeText(
+                        requireContext(),
+                        "Update product successfully!",
+                        Toast.LENGTH_SHORT
+                    ).show()
 //                        findNavController().navigate(R.id.action_registerFragment_to_productsFragment)
                 }
                 is NetworkResult.Error -> {
@@ -149,6 +159,11 @@ class ProductsFragment : Fragment() {
                 is NetworkResult.Success -> {
                     Log.d("HAHA", "before update adapter")
                     mAdapter.removeProduct(response.data!!)
+                    Toast.makeText(
+                        requireContext(),
+                        "Removed product successfully!",
+                        Toast.LENGTH_SHORT
+                    ).show()
 //                        findNavController().navigate(R.id.action_registerFragment_to_productsFragment)
                 }
                 is NetworkResult.Error -> {
