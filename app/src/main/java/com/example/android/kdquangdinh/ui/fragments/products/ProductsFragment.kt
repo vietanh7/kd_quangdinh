@@ -20,6 +20,7 @@ import com.example.android.kdquangdinh.models.Product
 import com.example.android.kdquangdinh.util.AddProductDialogFragment
 import com.example.android.kdquangdinh.util.NetworkResult
 import com.example.android.kdquangdinh.util.UpdateProductDialogFragment
+import com.example.android.kdquangdinh.util.observeOnce
 import com.example.android.kdquangdinh.viewmodels.MainViewModel
 
 
@@ -81,6 +82,7 @@ class ProductsFragment : Fragment() {
         mainViewModel.getAllProductsResult.observe(viewLifecycleOwner, { response ->
             when (response) {
                 is NetworkResult.Success -> {
+                    binding.recyclerview.visibility = View.VISIBLE
                     mAdapter.addHeaderAndSubmitList(
                         response.data,
                         mainViewModel.token.isNullOrEmpty()
@@ -149,7 +151,12 @@ class ProductsFragment : Fragment() {
                 val list = mutableListOf<Product>(response.data!!)
                 when (response) {
                     is NetworkResult.Success -> {
-                        mAdapter.addHeaderAndSubmitList(list, mainViewModel.token.isNullOrEmpty())
+                        if (list.isNullOrEmpty() || list.get(0).sku.isNullOrEmpty()) {
+                            binding.recyclerview.visibility = View.GONE
+                        }else {
+                            binding.recyclerview.visibility = View.VISIBLE
+                            mAdapter.addHeaderAndSubmitList(list, mainViewModel.token.isNullOrEmpty())
+                        }
                     }
                     is NetworkResult.Error -> {
                         showToast(response?.message)
