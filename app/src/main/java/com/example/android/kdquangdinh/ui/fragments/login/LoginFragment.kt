@@ -51,7 +51,7 @@ class LoginFragment : Fragment() {
                     is NetworkResult.Success -> {
                         Toast.makeText(
                             requireContext(),
-                            "Welcome $email}",
+                            "Welcome $email",
                             Toast.LENGTH_SHORT
                         ).show()
                         findNavController().navigate(R.id.action_loginFragment_to_productsFragment)
