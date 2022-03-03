@@ -50,6 +50,18 @@ interface ProductsApi {
     ): Response<Product>
 
     @FormUrlEncoded
+    @POST("item/update")
+    suspend fun updateProduct(
+        @Header("Authorization") authHeader: String?,
+        @Field("sku") sku: String,
+        @Field("product_name") product_name: String,
+        @Field("qty") qty: Int,
+        @Field("price") price: Float,
+        @Field("unit") unit: String,
+        @Field("status") status: Int,
+    ): Response<Product>
+
+    @FormUrlEncoded
     @POST("item/search")
     suspend fun searchProducts(
         @Header("Authorization") authHeader: String?,

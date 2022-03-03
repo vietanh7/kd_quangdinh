@@ -22,18 +22,18 @@ private val ITEM_VIEW_TYPE_ITEM = 1
 class ProductsAdapter(val clickListener: ProductListener) :
     ListAdapter<DataItem, RecyclerView.ViewHolder>(ProductDiffCallback()){
 
-    var currentItems : List<DataItem> = ArrayList()
+    var currentItems : MutableList<DataItem> = mutableListOf()
     var areButtonsDisabled = true
 
     private val adapterScope = CoroutineScope(Dispatchers.Default)
 
-    fun addHeaderAndSubmitList(list: List<Product>?, areButtonsDisabled: Boolean) {
+    fun addHeaderAndSubmitList(list: MutableList<Product>?, areButtonsDisabled: Boolean) {
         this.areButtonsDisabled = areButtonsDisabled
 
         adapterScope.launch {
             currentItems = when (list) {
-                null -> listOf(DataItem.Header)
-                else -> listOf(DataItem.Header) + list.map { DataItem.ProductItem(it, areButtonsDisabled) }
+                null -> mutableListOf(DataItem.Header)
+                else -> (mutableListOf(DataItem.Header) + list.map { DataItem.ProductItem(it, areButtonsDisabled) }) as MutableList<DataItem>
             }
             withContext(Dispatchers.Main) {
                 submitList(currentItems)
@@ -44,16 +44,49 @@ class ProductsAdapter(val clickListener: ProductListener) :
     fun addProduct(product: Product) {
 
         adapterScope.launch {
-            currentItems = currentItems + listOf(DataItem.ProductItem(product, areButtonsDisabled))
+            currentItems =
+                (currentItems + mutableListOf(DataItem.ProductItem(product, areButtonsDisabled))) as MutableList<DataItem>
             withContext(Dispatchers.Main) {
                 submitList(currentItems)
             }
         }
     }
 
+
+    fun updateProduct(product: Product) {
+
+        adapterScope.launch {
+//        for (item in currentItems) {
+//            if (item.sku.equals(product.sku)) {
+//
+//            }
+//
+//        }
+            Log.d("HAHA", "before edit size: " + currentItems.size)
+            currentItems.forEachIndexed { index, element ->
+                if (element.sku.equals(product.sku)) {
+                    currentItems[index] = (DataItem.ProductItem(product, areButtonsDisabled))
+                }
+            }
+//            currentItems.filterNot { it ->
+//
+//                if (it.sku.equals(product.sku)) {
+//                    Log.d("HAHA", "find matching ")
+//                }
+//                it.sku.equals(product.sku) }
+//            Log.d("HAHA", "after edit size: " + currentItems.size)
+//            currentItems = currentItems + listOf(DataItem.ProductItem(product, areButtonsDisabled))
+            withContext(Dispatchers.Main) {
+                submitList(currentItems)
+            }
+        }
+    }
+
+
     fun removeProduct(product: Product) {
 
-        currentItems = currentItems - listOf(DataItem.ProductItem(product, areButtonsDisabled))
+        currentItems =
+            (currentItems - mutableListOf(DataItem.ProductItem(product, areButtonsDisabled))) as MutableList<DataItem>
 
         adapterScope.launch {
             withContext(Dispatchers.Main) {

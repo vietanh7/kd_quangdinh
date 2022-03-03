@@ -28,6 +28,7 @@ class MainViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
 
     var token: String? = ""
+    var updatedProduct: Product? = null
     var addedProduct: MutableLiveData<Product> = MutableLiveData()
 
     /** RETROFIT */
@@ -37,6 +38,7 @@ class MainViewModel @Inject constructor(
     var addProductResult: MutableLiveData<NetworkResult<Product>> = MutableLiveData()
     var removeProductResult: MutableLiveData<NetworkResult<Product>> = MutableLiveData()
     var searchProductResult: MutableLiveData<NetworkResult<Product>> = MutableLiveData()
+    var updateProductResult: MutableLiveData<NetworkResult<Product>> = MutableLiveData()
 
     val readToken = dataStoreRepository.readToken
 
@@ -54,6 +56,43 @@ class MainViewModel @Inject constructor(
 
     fun searchProducts(token: String?, searchQuery: String) = viewModelScope.launch {
         searchProductsSafeCall(token, searchQuery)
+    }
+
+    fun updateProduct(token: String?, product: Product) = viewModelScope.launch {
+        updateProductSafeCall(token, product)
+    }
+
+    private suspend fun updateProductSafeCall(token: String?, product: Product) {
+        updateProductResult.value = NetworkResult.Loading()
+
+        try {
+
+            val response = repository.remote.updateProduct(token, product)
+            Log.d("HAHA", response.toString())
+            updateProductResult.value = handleUpdateProductResponse(response)
+
+
+        } catch (e: Exception) {
+            updateProductResult.value =
+                NetworkResult.Error(getApplication<Application>().resources.getString(R.string.update_product_failed_error))
+        }
+    }
+
+    private fun handleUpdateProductResponse(response: Response<Product>): NetworkResult<Product>? {
+        when {
+            response.isSuccessful -> {
+                val result = response.body()
+                if (result != null) {
+                    return NetworkResult.Success(result)
+                } else {
+                    return NetworkResult.Error(getApplication<Application>().resources.getString(R.string.update_product_failed_error))
+                }
+            }
+            else -> {
+                //error message in response is empty so we show default error message
+                return NetworkResult.Error(getApplication<Application>().resources.getString(R.string.update_product_failed_error))
+            }
+        }
     }
 
     private suspend fun searchProductsSafeCall(token: String?, searchQuery: String) {

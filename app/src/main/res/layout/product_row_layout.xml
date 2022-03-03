@@ -71,6 +71,7 @@
             android:layout_marginEnd="8dp"
             android:visibility="@{areButtonsDisabled? View.GONE : View.VISIBLE}"
             android:text="Edit"
+            android:onClick="@{() -> clickListener.onUpdateClick(product)}"
             app:layout_constraintEnd_toStartOf="@+id/delete_btn"
             app:layout_constraintTop_toTopOf="@+id/delete_btn" />
 

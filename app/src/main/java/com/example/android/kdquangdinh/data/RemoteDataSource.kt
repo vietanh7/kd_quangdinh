@@ -50,4 +50,16 @@ class RemoteDataSource @Inject constructor(
             sku = productSku,
         )
     }
+
+    suspend fun updateProduct(token: String?, product: Product): Response<Product> {
+        return productsApi.updateProduct(
+            "Bearer " + token,
+            product_name = product.productName,
+            sku = product.sku,
+            qty = product.qty,
+            price = product.price,
+            unit = product.unit,
+            status = product.status
+        )
+    }
 }

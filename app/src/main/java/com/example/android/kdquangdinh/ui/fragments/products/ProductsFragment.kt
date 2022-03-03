@@ -19,6 +19,7 @@ import com.example.android.kdquangdinh.databinding.FragmentProductsBinding
 import com.example.android.kdquangdinh.models.Product
 import com.example.android.kdquangdinh.util.AddProductDialogFragment
 import com.example.android.kdquangdinh.util.NetworkResult
+import com.example.android.kdquangdinh.util.UpdateProductDialogFragment
 import com.example.android.kdquangdinh.viewmodels.MainViewModel
 
 
@@ -35,7 +36,10 @@ class ProductsFragment : Fragment() {
     private val mAdapter by lazy {
         ProductsAdapter(
             ProductListener({
-
+                mainViewModel.updatedProduct = it
+                UpdateProductDialogFragment().show(
+                    childFragmentManager, AddProductDialogFragment.TAG
+                )
             },
                 {
                     Log.d("HAHA", "inside remove a")
@@ -119,6 +123,27 @@ class ProductsFragment : Fragment() {
             }
         })
 
+
+        mainViewModel.updateProductResult.observe(viewLifecycleOwner, { response ->
+            when (response) {
+                is NetworkResult.Success -> {
+                    if (response.data != null)
+                        mAdapter.updateProduct(response.data)
+//                        findNavController().navigate(R.id.action_registerFragment_to_productsFragment)
+                }
+                is NetworkResult.Error -> {
+                    Toast.makeText(
+                        requireContext(),
+                        response.message,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                is NetworkResult.Loading -> {
+//
+                }
+            }
+        })
+
         mainViewModel.removeProductResult.observe(viewLifecycleOwner, { response ->
             when (response) {
                 is NetworkResult.Success -> {
@@ -158,7 +183,7 @@ class ProductsFragment : Fragment() {
             if (response.data == null) {
 
             } else {
-                val list = listOf<Product>(response.data!!)
+                val list = mutableListOf<Product>(response.data!!)
 
                 when (response) {
                     is NetworkResult.Success -> {
