@@ -33,11 +33,13 @@ class MainViewModel @Inject constructor(
     /** RETROFIT */
     var registerResult: MutableLiveData<NetworkResult<RegisterResult>> = MutableLiveData()
     var loginResult: MutableLiveData<NetworkResult<LoginResult>> = MutableLiveData()
-    var getAllProductsResult: MutableLiveData<NetworkResult<GetAllProductsResult>> = MutableLiveData()
+    var getAllProductsResult: MutableLiveData<NetworkResult<GetAllProductsResult>> =
+        MutableLiveData()
     var addProductResult: MutableLiveData<NetworkResult<Product>> = MutableLiveData()
     var removeProductResult: MutableLiveData<NetworkResult<Product>> = MutableLiveData()
     var searchProductResult: MutableLiveData<NetworkResult<Product>> = MutableLiveData()
     var updateProductResult: MutableLiveData<NetworkResult<Product>> = MutableLiveData()
+    var error: MutableLiveData<String> = MutableLiveData()
 
     /** Share Preference */
     val readToken = dataStoreRepository.readToken
@@ -308,5 +310,32 @@ class MainViewModel @Inject constructor(
                 return NetworkResult.Error(getApplication<Application>().resources.getString(R.string.register_failed_error))
             }
         }
+    }
+
+    fun isEmailValid(email: String): Boolean {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
+    fun isPasswordValid(password: String): Boolean {
+        return !password.isNullOrEmpty()
+    }
+
+    fun validateEmailAndPassword(email: String, password: String): Boolean {
+        if (email.isNullOrEmpty()) {
+            error.value = "Email can not be empty"
+            return false
+        }
+
+        if (!isEmailValid(email)) {
+            error.value = "Email is in wrong format"
+            return false
+        }
+
+        if (!isPasswordValid(password)) {
+            error.value = "Password can not be empty"
+            return false
+        }
+
+        return true
     }
 }

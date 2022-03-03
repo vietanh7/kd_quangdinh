@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.android.kdquangdinh.R
 import com.example.android.kdquangdinh.databinding.FragmentLoginBinding
 import com.example.android.kdquangdinh.databinding.FragmentRegisterBinding
+import com.example.android.kdquangdinh.models.Product
 import com.example.android.kdquangdinh.util.NetworkResult
 import com.example.android.kdquangdinh.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -44,6 +45,11 @@ class LoginFragment : Fragment() {
         binding.loginButton.setOnClickListener {
             val email = binding.emailEdittext.text.toString().trim()
             val password = binding.passwordEdittext.text.toString().trim()
+
+            val isEmailAndPasswordValid = mainViewModel.validateEmailAndPassword(email, password)
+            if (!isEmailAndPasswordValid)
+                return@setOnClickListener
+
             //TO-DO validate email and password
             mainViewModel.login(email, password)
             mainViewModel.loginResult.observe(viewLifecycleOwner, {response ->
@@ -70,7 +76,21 @@ class LoginFragment : Fragment() {
 
         }
 
+        mainViewModel.error.observe(viewLifecycleOwner, { error ->
+            showToast(error)
+        })
+
         return binding.root
     }
+
+    private fun showToast(message: String?) {
+        Toast.makeText(
+            requireContext(),
+            message,
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
+
 
 }

@@ -45,7 +45,11 @@ class RegisterFragment : Fragment() {
         binding.registerButton.setOnClickListener {
             val email = binding.emailEdittext.text.toString().trim()
             val password = binding.passwordEdittext.text.toString().trim()
-            //TO-DO validate email and password
+
+            val isEmailAndPasswordValid = mainViewModel.validateEmailAndPassword(email, password)
+            if (!isEmailAndPasswordValid)
+                return@setOnClickListener
+
             mainViewModel.register(email, password)
             mainViewModel.registerResult.observe(viewLifecycleOwner, {response ->
                 when (response) {
@@ -88,7 +92,19 @@ class RegisterFragment : Fragment() {
             })
         }
 
+        mainViewModel.error.observe(viewLifecycleOwner, { error ->
+            showToast(error)
+        })
+
         return binding.root
+    }
+
+    private fun showToast(message: String?) {
+        Toast.makeText(
+            requireContext(),
+            message,
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
 
