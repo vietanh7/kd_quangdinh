@@ -27,6 +27,7 @@
             android:id="@+id/action_registerFragment_to_productsFragment"
             app:destination="@id/productsFragment"
             app:popUpTo="@id/productsFragment"
+            app:popUpToInclusive="true"
             />
     </fragment>
     <fragment
@@ -37,6 +38,7 @@
             android:id="@+id/action_loginFragment_to_productsFragment"
             app:destination="@id/productsFragment"
             app:popUpTo="@id/productsFragment"
+            app:popUpToInclusive="true"
             />
     </fragment>
 </navigation>
