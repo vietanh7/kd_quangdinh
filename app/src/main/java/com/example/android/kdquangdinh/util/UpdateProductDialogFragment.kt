@@ -49,7 +49,7 @@ class UpdateProductDialogFragment : DialogFragment() {
                                 status = binding.statusEt.text.toString().toInt()
                             ))
                         } catch (e: Exception) {
-
+                            mainViewModel.error.value = getString(R.string.product_field_not_valid)
                         }
                     })
                 .setNegativeButton(R.string.cancel,

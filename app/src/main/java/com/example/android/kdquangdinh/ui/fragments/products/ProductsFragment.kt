@@ -165,6 +165,10 @@ class ProductsFragment : Fragment() {
                 }
             }
         })
+
+        mainViewModel.error.observe(viewLifecycleOwner, { error ->
+            showToast(error)
+        })
     }
 
     private fun setUpClickListeners() {
