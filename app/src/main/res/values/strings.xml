@@ -12,6 +12,7 @@
     <string name="register_failed_error">Fail to register!</string>
     <string name="login_failed_error">Fail to login!</string>
     <string name="get_all_products_failed_error">Fail to get products!</string>
+    <string name="add_product_failed_error">Fail to add new product!</string>
     <string name="add_product">Add product</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>

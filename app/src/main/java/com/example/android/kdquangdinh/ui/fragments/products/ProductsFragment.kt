@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.findNavController
@@ -14,6 +15,7 @@ import com.example.android.kdquangdinh.R
 import com.example.android.kdquangdinh.adapters.ProductListener
 import com.example.android.kdquangdinh.adapters.ProductsAdapter
 import com.example.android.kdquangdinh.databinding.FragmentProductsBinding
+import com.example.android.kdquangdinh.models.Product
 import com.example.android.kdquangdinh.util.AddProductDialogFragment
 import com.example.android.kdquangdinh.util.NetworkResult
 import com.example.android.kdquangdinh.viewmodels.MainViewModel
@@ -84,6 +86,25 @@ class ProductsFragment : Fragment() {
             }
         })
 
+        mainViewModel.addProductResult.observe(viewLifecycleOwner, {response ->
+            when (response) {
+                is NetworkResult.Success -> {
+                    mAdapter.addProduct(response.data!!)
+//                        findNavController().navigate(R.id.action_registerFragment_to_productsFragment)
+                }
+                is NetworkResult.Error -> {
+                    Toast.makeText(
+                        requireContext(),
+                        response.message,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                is NetworkResult.Loading -> {
+//
+                }
+            }
+        })
+
         binding.addProductBtn.setOnClickListener({
             AddProductDialogFragment().show(
                 childFragmentManager, AddProductDialogFragment.TAG)
@@ -96,6 +117,4 @@ class ProductsFragment : Fragment() {
         binding.recyclerview.adapter = mAdapter
         binding.recyclerview.layoutManager = LinearLayoutManager(requireContext())
     }
-
-
 }

@@ -10,6 +10,7 @@ import com.example.android.kdquangdinh.data.DataStoreRepository
 import com.example.android.kdquangdinh.data.Repository
 import com.example.android.kdquangdinh.models.GetAllProductsResult
 import com.example.android.kdquangdinh.models.LoginResult
+import com.example.android.kdquangdinh.models.Product
 import com.example.android.kdquangdinh.models.RegisterResult
 import com.example.android.kdquangdinh.util.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,11 +28,13 @@ class MainViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
 
     var token: String? = ""
+    var addedProduct: MutableLiveData<Product> = MutableLiveData()
 
     /** RETROFIT */
     var registerResult: MutableLiveData<NetworkResult<RegisterResult>> = MutableLiveData()
     var loginResult: MutableLiveData<NetworkResult<LoginResult>> = MutableLiveData()
     var getAllProductsResult: MutableLiveData<NetworkResult<GetAllProductsResult>> = MutableLiveData()
+    var addProductResult: MutableLiveData<NetworkResult<Product>> = MutableLiveData()
 
     val readToken = dataStoreRepository.readToken
 
@@ -45,6 +48,44 @@ class MainViewModel @Inject constructor(
 
     fun getAllProducts(token: String?) = viewModelScope.launch {
         getAllProductsSafeCall(token)
+    }
+
+    fun addProduct(token: String?, product: Product) = viewModelScope.launch {
+        addProductSafeCall(token, product)
+    }
+
+    private suspend fun addProductSafeCall(token: String?, product: Product) {
+        addProductResult.value = NetworkResult.Loading()
+
+        try {
+
+            val response = repository.remote.addProduct(token, product)
+            Log.d("HAHA", response.toString())
+            addProductResult.value = handleAddProductResponse(response)
+
+
+        } catch (e: Exception) {
+            addProductResult.value =
+                NetworkResult.Error(getApplication<Application>().resources.getString(R.string.add_product_failed_error))
+        }
+    }
+
+    private fun handleAddProductResponse(response: Response<Product>): NetworkResult<Product>? {
+        when {
+
+            response.isSuccessful -> {
+                val result = response.body()
+                if (result != null) {
+                    return NetworkResult.Success(result)
+                } else {
+                    return NetworkResult.Error(getApplication<Application>().resources.getString(R.string.add_product_failed_error))
+                }
+            }
+            else -> {
+                //error message in response is empty so we show default error message
+                return NetworkResult.Error(getApplication<Application>().resources.getString(R.string.add_product_failed_error))
+            }
+        }
     }
 
     private suspend fun getAllProductsSafeCall(token: String?) {

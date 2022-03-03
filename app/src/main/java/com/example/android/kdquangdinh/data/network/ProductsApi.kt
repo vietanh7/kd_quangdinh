@@ -2,6 +2,7 @@ package com.example.android.kdquangdinh.data.network
 
 import com.example.android.kdquangdinh.models.GetAllProductsResult
 import com.example.android.kdquangdinh.models.LoginResult
+import com.example.android.kdquangdinh.models.Product
 import com.example.android.kdquangdinh.models.RegisterResult
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -28,6 +29,18 @@ interface ProductsApi {
     suspend fun getAllProducts(
         @Header("Authorization") authHeader: String?
     ): Response<GetAllProductsResult>
+
+    @FormUrlEncoded
+    @POST("item/add")
+    suspend fun addProduct(
+        @Header("Authorization") authHeader: String?,
+        @Field("sku") sku: String,
+        @Field("product_name") product_name: String,
+        @Field("qty") qty: Int,
+        @Field("price") price: Float,
+        @Field("unit") unit: String,
+        @Field("status") status: Int,
+    ): Response<Product>
 
 
 

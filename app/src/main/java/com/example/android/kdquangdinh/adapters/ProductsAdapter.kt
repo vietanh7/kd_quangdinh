@@ -21,20 +21,36 @@ private val ITEM_VIEW_TYPE_ITEM = 1
 class ProductsAdapter(val clickListener: ProductListener?) :
     ListAdapter<DataItem, RecyclerView.ViewHolder>(ProductDiffCallback()){
 
+    lateinit var currentItems : List<DataItem>
+    var areButtonsDisabled = false
 
     private val adapterScope = CoroutineScope(Dispatchers.Default)
 
     fun addHeaderAndSubmitList(list: List<Product>?, areButtonsDisabled: Boolean) {
+        this.areButtonsDisabled = areButtonsDisabled
+
         adapterScope.launch {
-            val items = when (list) {
+            currentItems = when (list) {
                 null -> listOf(DataItem.Header)
                 else -> listOf(DataItem.Header) + list.map { DataItem.ProductItem(it, areButtonsDisabled) }
             }
             withContext(Dispatchers.Main) {
-                submitList(items)
+                submitList(currentItems)
             }
         }
     }
+
+    fun addProduct(product: Product) {
+
+        adapterScope.launch {
+            currentItems = currentItems + listOf(DataItem.ProductItem(product, areButtonsDisabled))
+            withContext(Dispatchers.Main) {
+                submitList(currentItems)
+            }
+        }
+    }
+
+
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
