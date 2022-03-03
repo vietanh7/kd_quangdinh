@@ -35,6 +35,7 @@ class MainViewModel @Inject constructor(
     var loginResult: MutableLiveData<NetworkResult<LoginResult>> = MutableLiveData()
     var getAllProductsResult: MutableLiveData<NetworkResult<GetAllProductsResult>> = MutableLiveData()
     var addProductResult: MutableLiveData<NetworkResult<Product>> = MutableLiveData()
+    var removeProductResult: MutableLiveData<NetworkResult<Product>> = MutableLiveData()
 
     val readToken = dataStoreRepository.readToken
 
@@ -52,6 +53,44 @@ class MainViewModel @Inject constructor(
 
     fun addProduct(token: String?, product: Product) = viewModelScope.launch {
         addProductSafeCall(token, product)
+    }
+
+    fun removeProduct(token: String?, productSku: String) = viewModelScope.launch {
+        removeProductSafeCall(token, productSku)
+    }
+
+    private suspend fun removeProductSafeCall(token: String?, productSku: String) {
+        removeProductResult.value = NetworkResult.Loading()
+
+        try {
+
+            val response = repository.remote.removeProduct(token, productSku)
+            Log.d("HAHA", response.toString())
+            removeProductResult.value = handleRemoveProductResponse(response)
+
+
+        } catch (e: Exception) {
+            removeProductResult.value =
+                NetworkResult.Error(getApplication<Application>().resources.getString(R.string.remove_product_failed_error))
+        }
+    }
+
+    private fun handleRemoveProductResponse(response: Response<Product>): NetworkResult<Product>? {
+        when {
+
+            response.isSuccessful -> {
+                val result = response.body()
+                if (result != null) {
+                    return NetworkResult.Success(result)
+                } else {
+                    return NetworkResult.Error(getApplication<Application>().resources.getString(R.string.remove_product_failed_error))
+                }
+            }
+            else -> {
+                //error message in response is empty so we show default error message
+                return NetworkResult.Error(getApplication<Application>().resources.getString(R.string.remove_product_failed_error))
+            }
+        }
     }
 
     private suspend fun addProductSafeCall(token: String?, product: Product) {

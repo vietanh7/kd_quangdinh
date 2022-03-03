@@ -1,6 +1,7 @@
 package com.example.android.kdquangdinh.ui.fragments.products
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -31,7 +32,13 @@ class ProductsFragment : Fragment() {
     private var _binding: FragmentProductsBinding? = null
     private val binding get() = _binding!!
     private lateinit var mainViewModel: MainViewModel
-    private val mAdapter by lazy { ProductsAdapter(null) }
+    private val mAdapter by lazy { ProductsAdapter(ProductListener({
+
+    },
+        {
+            Log.d("HAHA", "inside remove a")
+            mainViewModel.removeProduct(mainViewModel.token,it)
+        })) }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -90,6 +97,26 @@ class ProductsFragment : Fragment() {
             when (response) {
                 is NetworkResult.Success -> {
                     mAdapter.addProduct(response.data!!)
+//                        findNavController().navigate(R.id.action_registerFragment_to_productsFragment)
+                }
+                is NetworkResult.Error -> {
+                    Toast.makeText(
+                        requireContext(),
+                        response.message,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                is NetworkResult.Loading -> {
+//
+                }
+            }
+        })
+
+        mainViewModel.removeProductResult.observe(viewLifecycleOwner, {response ->
+            when (response) {
+                is NetworkResult.Success -> {
+                    Log.d("HAHA", "before update adapter")
+                    mAdapter.removeProduct(response.data!!)
 //                        findNavController().navigate(R.id.action_registerFragment_to_productsFragment)
                 }
                 is NetworkResult.Error -> {

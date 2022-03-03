@@ -42,6 +42,13 @@ interface ProductsApi {
         @Field("status") status: Int,
     ): Response<Product>
 
+    @FormUrlEncoded
+    @POST("item/delete")
+    suspend fun removeProduct(
+        @Header("Authorization") authHeader: String?,
+        @Field("sku") sku: String,
+    ): Response<Product>
+
 
 
 }

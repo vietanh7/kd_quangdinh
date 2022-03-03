@@ -1,6 +1,7 @@
 package com.example.android.kdquangdinh.adapters
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,11 +19,11 @@ import kotlinx.coroutines.withContext
 private val ITEM_VIEW_TYPE_HEADER = 0
 private val ITEM_VIEW_TYPE_ITEM = 1
 
-class ProductsAdapter(val clickListener: ProductListener?) :
+class ProductsAdapter(val clickListener: ProductListener) :
     ListAdapter<DataItem, RecyclerView.ViewHolder>(ProductDiffCallback()){
 
-    lateinit var currentItems : List<DataItem>
-    var areButtonsDisabled = false
+    var currentItems : List<DataItem> = ArrayList()
+    var areButtonsDisabled = true
 
     private val adapterScope = CoroutineScope(Dispatchers.Default)
 
@@ -50,7 +51,16 @@ class ProductsAdapter(val clickListener: ProductListener?) :
         }
     }
 
+    fun removeProduct(product: Product) {
 
+        currentItems = currentItems - listOf(DataItem.ProductItem(product, areButtonsDisabled))
+
+        adapterScope.launch {
+            withContext(Dispatchers.Main) {
+                submitList(currentItems)
+            }
+        }
+    }
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
@@ -71,10 +81,10 @@ class ProductsAdapter(val clickListener: ProductListener?) :
 
     class ViewHolder private constructor(val binding: ProductRowLayoutBinding) : RecyclerView.ViewHolder(binding.root){
 
-        fun bind(item: Product, areButtonsDisabled: Boolean) {
+        fun bind(item: Product, areButtonsDisabled: Boolean, clickListener: ProductListener) {
             binding.product = item
             binding.areButtonsDisabled = areButtonsDisabled
-//            binding.clickListener = clickListener
+            binding.clickListener = clickListener
             binding.executePendingBindings()
         }
 
@@ -99,7 +109,7 @@ class ProductsAdapter(val clickListener: ProductListener?) :
         when (holder) {
             is ViewHolder -> {
                 val productItem = getItem(position) as DataItem.ProductItem
-                holder.bind(productItem.product, productItem.areButtonsDisabled)
+                holder.bind(productItem.product, productItem.areButtonsDisabled, clickListener)
             }
         }
     }
@@ -107,7 +117,7 @@ class ProductsAdapter(val clickListener: ProductListener?) :
 
 class ProductDiffCallback : DiffUtil.ItemCallback<DataItem>() {
     override fun areItemsTheSame(oldItem: DataItem, newItem: DataItem): Boolean {
-        return oldItem.id == newItem.id
+        return oldItem.sku == newItem.sku
     }
     @SuppressLint("DiffUtilEquals")
     override fun areContentsTheSame(oldItem: DataItem, newItem: DataItem): Boolean {
@@ -115,20 +125,19 @@ class ProductDiffCallback : DiffUtil.ItemCallback<DataItem>() {
     }
 }
 
-class ProductListener(val updateListener: (productId: Long?) -> Unit, val removeListener: (productId: Long?) -> Unit) {
-    fun onUpdateClick(product: Product) = updateListener(product.id)
-    fun onRemoveClick(product: Product) = removeListener(product.id)
+open class ProductListener(public val updateListener: (product: Product) -> Unit, public val removeListener: (productSku: String) -> Unit) {
+    fun onUpdateClick(product: Product) = updateListener(product)
+    fun onRemoveClick(product: Product) = removeListener(product.sku)
 }
 
 sealed class DataItem {
     data class ProductItem(val product: Product, val areButtonsDisabled: Boolean ): DataItem() {
-        override val id = product.id
+        override val sku = product.sku
     }
 
     object Header: DataItem() {
-        override val id = Long.MIN_VALUE
+        override val sku = "header"
     }
 
-    abstract val id: Long?
-//    var areButtonsDisabled: Boolean = true
+    abstract val sku: String
 }

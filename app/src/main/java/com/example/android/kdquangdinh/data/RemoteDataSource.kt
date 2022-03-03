@@ -39,4 +39,11 @@ class RemoteDataSource @Inject constructor(
         )
 
     }
+
+    suspend fun removeProduct(token: String?, productSku: String): Response<Product> {
+        return productsApi.removeProduct(
+            "Bearer " + token,
+            sku = productSku,
+        )
+    }
 }
