@@ -36,6 +36,7 @@ class MainViewModel @Inject constructor(
     var getAllProductsResult: MutableLiveData<NetworkResult<GetAllProductsResult>> = MutableLiveData()
     var addProductResult: MutableLiveData<NetworkResult<Product>> = MutableLiveData()
     var removeProductResult: MutableLiveData<NetworkResult<Product>> = MutableLiveData()
+    var searchProductResult: MutableLiveData<NetworkResult<Product>> = MutableLiveData()
 
     val readToken = dataStoreRepository.readToken
 
@@ -49,6 +50,46 @@ class MainViewModel @Inject constructor(
 
     fun getAllProducts(token: String?) = viewModelScope.launch {
         getAllProductsSafeCall(token)
+    }
+
+    fun searchProducts(token: String?, searchQuery: String) = viewModelScope.launch {
+        searchProductsSafeCall(token, searchQuery)
+    }
+
+    private suspend fun searchProductsSafeCall(token: String?, searchQuery: String) {
+        Log.d("HAHA", "inside searchProductsSafeCall")
+        searchProductResult.value = NetworkResult.Loading()
+
+        try {
+
+            val response = repository.remote.searchProducts(token, searchQuery)
+            searchProductResult.value = handleSearchProductsResponse(response)
+
+
+        } catch (e: Exception) {
+            Log.d("HAHA", "inside exception " + e.stackTrace)
+            searchProductResult.value =
+                NetworkResult.Error(getApplication<Application>().resources.getString(R.string.get_all_products_failed_error))
+        }
+    }
+
+    private fun handleSearchProductsResponse(response: Response<Product>): NetworkResult<Product>? {
+        Log.d("HAHA", "search response is: " + response.toString())
+        when {
+
+            response.isSuccessful -> {
+                val result = response.body()
+                if (result != null) {
+                    return NetworkResult.Success(result)
+                } else {
+                    return NetworkResult.Error(getApplication<Application>().resources.getString(R.string.search_product_failed_error))
+                }
+            }
+            else -> {
+                //error message in response is empty so we show default error message
+                return NetworkResult.Error(getApplication<Application>().resources.getString(R.string.search_product_failed_error))
+            }
+        }
     }
 
     fun addProduct(token: String?, product: Product) = viewModelScope.launch {

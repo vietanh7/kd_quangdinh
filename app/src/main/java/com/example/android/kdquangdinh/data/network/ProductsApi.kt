@@ -49,6 +49,13 @@ interface ProductsApi {
         @Field("sku") sku: String,
     ): Response<Product>
 
+    @FormUrlEncoded
+    @POST("item/search")
+    suspend fun searchProducts(
+        @Header("Authorization") authHeader: String?,
+        @Field("sku") sku: String,
+    ): Response<Product>
+
 
 
 }

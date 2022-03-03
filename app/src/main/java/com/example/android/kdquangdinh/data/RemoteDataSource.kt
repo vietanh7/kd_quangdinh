@@ -26,6 +26,10 @@ class RemoteDataSource @Inject constructor(
         return productsApi.getAllProducts("Bearer " + token)
     }
 
+    suspend fun searchProducts(token: String?, sku: String): Response<Product> {
+        return productsApi.searchProducts("Bearer " + token, sku)
+    }
+
     suspend fun addProduct(token: String?, product: Product): Response<Product> {
         Log.d("HAHA", "token is: " + token)
         return productsApi.addProduct(

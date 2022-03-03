@@ -32,13 +32,17 @@ class ProductsFragment : Fragment() {
     private var _binding: FragmentProductsBinding? = null
     private val binding get() = _binding!!
     private lateinit var mainViewModel: MainViewModel
-    private val mAdapter by lazy { ProductsAdapter(ProductListener({
+    private val mAdapter by lazy {
+        ProductsAdapter(
+            ProductListener({
 
-    },
-        {
-            Log.d("HAHA", "inside remove a")
-            mainViewModel.removeProduct(mainViewModel.token,it)
-        })) }
+            },
+                {
+                    Log.d("HAHA", "inside remove a")
+                    mainViewModel.removeProduct(mainViewModel.token, it)
+                })
+        )
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,10 +78,13 @@ class ProductsFragment : Fragment() {
 
         setupRecyclerView()
 
-        mainViewModel.getAllProductsResult.observe(viewLifecycleOwner, {response ->
+        mainViewModel.getAllProductsResult.observe(viewLifecycleOwner, { response ->
             when (response) {
                 is NetworkResult.Success -> {
-                    mAdapter.addHeaderAndSubmitList(response.data, mainViewModel.token.isNullOrEmpty())
+                    mAdapter.addHeaderAndSubmitList(
+                        response.data,
+                        mainViewModel.token.isNullOrEmpty()
+                    )
 //                        findNavController().navigate(R.id.action_registerFragment_to_productsFragment)
                 }
                 is NetworkResult.Error -> {
@@ -93,7 +100,7 @@ class ProductsFragment : Fragment() {
             }
         })
 
-        mainViewModel.addProductResult.observe(viewLifecycleOwner, {response ->
+        mainViewModel.addProductResult.observe(viewLifecycleOwner, { response ->
             when (response) {
                 is NetworkResult.Success -> {
                     mAdapter.addProduct(response.data!!)
@@ -112,7 +119,7 @@ class ProductsFragment : Fragment() {
             }
         })
 
-        mainViewModel.removeProductResult.observe(viewLifecycleOwner, {response ->
+        mainViewModel.removeProductResult.observe(viewLifecycleOwner, { response ->
             when (response) {
                 is NetworkResult.Success -> {
                     Log.d("HAHA", "before update adapter")
@@ -134,7 +141,44 @@ class ProductsFragment : Fragment() {
 
         binding.addProductBtn.setOnClickListener({
             AddProductDialogFragment().show(
-                childFragmentManager, AddProductDialogFragment.TAG)
+                childFragmentManager, AddProductDialogFragment.TAG
+            )
+        })
+
+        binding.searchBtn.setOnClickListener({
+            val searchQuery = binding.seachEt.text.toString()
+            if (searchQuery.isNullOrEmpty()) {
+                mainViewModel.getAllProducts(mainViewModel.token)
+            } else {
+                mainViewModel.searchProducts(mainViewModel.token, searchQuery)
+            }
+        })
+
+        mainViewModel.searchProductResult.observe(viewLifecycleOwner, { response ->
+            if (response.data == null) {
+
+            } else {
+                val list = listOf<Product>(response.data!!)
+
+                when (response) {
+                    is NetworkResult.Success -> {
+                        mAdapter.addHeaderAndSubmitList(list, mainViewModel.token.isNullOrEmpty())
+//                        findNavController().navigate(R.id.action_registerFragment_to_productsFragment)
+                    }
+                    is NetworkResult.Error -> {
+//                    Toast.makeText(
+//                        requireContext(),
+//                        response.message,
+//                        Toast.LENGTH_SHORT
+//                    ).show()
+                    }
+                    is NetworkResult.Loading -> {
+//
+                    }
+                }
+            }
+
+
         })
 
         return binding.root
