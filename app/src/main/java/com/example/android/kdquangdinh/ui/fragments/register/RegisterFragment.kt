@@ -50,7 +50,6 @@ class RegisterFragment : Fragment() {
                 when (response) {
                     is NetworkResult.Success -> {
                         mainViewModel.login(email, password)
-//                        findNavController().navigate(R.id.action_registerFragment_to_productsFragment)
                     }
                     is NetworkResult.Error -> {
                         Toast.makeText(
@@ -60,7 +59,6 @@ class RegisterFragment : Fragment() {
                         ).show()
                     }
                     is NetworkResult.Loading -> {
-//
                     }
                 }
             })

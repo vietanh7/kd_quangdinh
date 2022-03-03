@@ -29,7 +29,6 @@ class MainViewModel @Inject constructor(
 
     var token: String? = ""
     var updatedProduct: Product? = null
-    var addedProduct: MutableLiveData<Product> = MutableLiveData()
 
     /** RETROFIT */
     var registerResult: MutableLiveData<NetworkResult<RegisterResult>> = MutableLiveData()
@@ -40,6 +39,7 @@ class MainViewModel @Inject constructor(
     var searchProductResult: MutableLiveData<NetworkResult<Product>> = MutableLiveData()
     var updateProductResult: MutableLiveData<NetworkResult<Product>> = MutableLiveData()
 
+    /** Share Preference */
     val readToken = dataStoreRepository.readToken
 
     fun register(email: String, password: String) = viewModelScope.launch {
@@ -66,9 +66,7 @@ class MainViewModel @Inject constructor(
         updateProductResult.value = NetworkResult.Loading()
 
         try {
-
             val response = repository.remote.updateProduct(token, product)
-            Log.d("HAHA", response.toString())
             updateProductResult.value = handleUpdateProductResponse(response)
 
 
@@ -96,7 +94,6 @@ class MainViewModel @Inject constructor(
     }
 
     private suspend fun searchProductsSafeCall(token: String?, searchQuery: String) {
-        Log.d("HAHA", "inside searchProductsSafeCall")
         searchProductResult.value = NetworkResult.Loading()
 
         try {
@@ -106,14 +103,12 @@ class MainViewModel @Inject constructor(
 
 
         } catch (e: Exception) {
-            Log.d("HAHA", "inside exception " + e.stackTrace)
             searchProductResult.value =
                 NetworkResult.Error(getApplication<Application>().resources.getString(R.string.get_all_products_failed_error))
         }
     }
 
     private fun handleSearchProductsResponse(response: Response<Product>): NetworkResult<Product>? {
-        Log.d("HAHA", "search response is: " + response.toString())
         when {
 
             response.isSuccessful -> {
@@ -246,7 +241,6 @@ class MainViewModel @Inject constructor(
         }
 
     private suspend fun loginSafeCall(email: String, password: String) {
-        Log.d("HAHA", "LOGIN")
         loginResult.value = NetworkResult.Loading()
 
         try {
@@ -262,7 +256,6 @@ class MainViewModel @Inject constructor(
     }
 
     private fun handleLoginResponse(response: Response<LoginResult>): NetworkResult<LoginResult>? {
-        Log.d("HAHA", response.toString())
         when {
 
             response.isSuccessful -> {
@@ -283,7 +276,6 @@ class MainViewModel @Inject constructor(
     }
 
     private suspend fun registerSafeCall(email: String, password: String) {
-        Log.d("HAHA", "REGISTER")
         registerResult.value = NetworkResult.Loading()
 
         try {
@@ -300,7 +292,6 @@ class MainViewModel @Inject constructor(
     }
 
     private fun handleRegisterResponse(response: Response<RegisterResult>): NetworkResult<RegisterResult>? {
-        Log.d("HAHA", response.toString())
         when {
 
             response.isSuccessful -> {

@@ -35,10 +35,8 @@ class UpdateProductDialogFragment : DialogFragment() {
         return activity?.let {
             val builder = AlertDialog.Builder(it)
 
-            // Inflate and set the layout for the dialog
-            // Pass null as the parent view because its going in the dialog layout
             builder.setView(binding.root)
-                // Add action buttons
+
                 .setPositiveButton(R.string.ok,
                     DialogInterface.OnClickListener { dialog, id ->
                         try {

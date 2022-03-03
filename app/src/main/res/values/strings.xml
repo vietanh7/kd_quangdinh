@@ -20,4 +20,7 @@
     <string name="update_product">Update product</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="add_product_success">Add product successfully!</string>
+    <string name="update_product_success">Update product successfully!</string>
+    <string name="remove_product_success">Remove product successfully!</string>
 </resources>

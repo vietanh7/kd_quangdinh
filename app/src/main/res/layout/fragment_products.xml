@@ -52,6 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="Search"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/add_product_btn"
             app:layout_constraintStart_toEndOf="@+id/seach_et"
             app:layout_constraintTop_toTopOf="@+id/add_product_btn" />
@@ -74,6 +75,7 @@
             android:layout_marginStart="16dp"
             android:ems="10"
             android:hint="Enter exact sku to search"
+            android:visibility="gone"
             android:inputType="textPersonName"
             app:layout_constraintBottom_toBottomOf="@+id/add_product_btn"
             app:layout_constraintStart_toStartOf="parent" />

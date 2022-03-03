@@ -40,15 +40,12 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
-//        binding.life = this
-
 
         binding.loginButton.setOnClickListener {
             val email = binding.emailEdittext.text.toString()
             val password = binding.passwordEdittext.text.toString()
             mainViewModel.login(email, password)
             mainViewModel.loginResult.observe(viewLifecycleOwner, {response ->
-                Log.d("HAHA", "changed")
                 when (response) {
                     is NetworkResult.Success -> {
                         Toast.makeText(
@@ -66,12 +63,10 @@ class LoginFragment : Fragment() {
                         ).show()
                     }
                     is NetworkResult.Loading -> {
-//
                     }
                 }
             })
 
-//
         }
 
         return binding.root

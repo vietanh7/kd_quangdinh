@@ -42,45 +42,41 @@ class ProductsFragment : Fragment() {
                 )
             },
                 {
-                    Log.d("HAHA", "inside remove a")
+
                     mainViewModel.removeProduct(mainViewModel.token, it)
                 })
         )
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         mainViewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
-
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-//        return inflater.inflate(R.layout.fragment_products, container, false)
         _binding = FragmentProductsBinding.inflate(inflater, container, false)
 
-        binding.registerBtn.setOnClickListener {
-            findNavController().navigate(R.id.action_productsFragment_to_registerFragment)
-        }
+        setUpObservers()
+        setUpClickListeners()
+        setupRecyclerView()
 
-        binding.loginBtn.setOnClickListener {
-            findNavController().navigate(R.id.action_productsFragment_to_loginFragment)
-        }
+        return binding.root
+    }
 
+    private fun setUpObservers() {
         mainViewModel.readToken.asLiveData().observe(viewLifecycleOwner, { value ->
             mainViewModel.token = value
             if (!value.isNullOrEmpty()) {
                 binding.addProductBtn.visibility = View.VISIBLE
+                binding.searchBtn.visibility = View.VISIBLE
+                binding.seachEt.visibility = View.VISIBLE
             }
             mainViewModel.getAllProducts(value)
         })
-
-        setupRecyclerView()
 
         mainViewModel.getAllProductsResult.observe(viewLifecycleOwner, { response ->
             when (response) {
@@ -89,17 +85,12 @@ class ProductsFragment : Fragment() {
                         response.data,
                         mainViewModel.token.isNullOrEmpty()
                     )
-//                        findNavController().navigate(R.id.action_registerFragment_to_productsFragment)
                 }
                 is NetworkResult.Error -> {
-//                    Toast.makeText(
-//                        requireContext(),
-//                        response.message,
-//                        Toast.LENGTH_SHORT
-//                    ).show()
+                    showToast(response.message)
                 }
                 is NetworkResult.Loading -> {
-//
+
                 }
             }
         })
@@ -108,19 +99,10 @@ class ProductsFragment : Fragment() {
             when (response) {
                 is NetworkResult.Success -> {
                     mAdapter.addProduct(response.data!!)
-                    Toast.makeText(
-                        requireContext(),
-                        "Add product successfully!",
-                        Toast.LENGTH_SHORT
-                    ).show()
-//                        findNavController().navigate(R.id.action_registerFragment_to_productsFragment)
+                    showToast(getString(R.string.add_product_success))
                 }
                 is NetworkResult.Error -> {
-                    Toast.makeText(
-                        requireContext(),
-                        response.message,
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    showToast(response.message)
                 }
                 is NetworkResult.Loading -> {
 //
@@ -134,22 +116,12 @@ class ProductsFragment : Fragment() {
                 is NetworkResult.Success -> {
                     if (response.data != null)
                         mAdapter.updateProduct(response.data)
-                    Toast.makeText(
-                        requireContext(),
-                        "Update product successfully!",
-                        Toast.LENGTH_SHORT
-                    ).show()
-//                        findNavController().navigate(R.id.action_registerFragment_to_productsFragment)
+                    showToast(getString(R.string.update_product_success))
                 }
                 is NetworkResult.Error -> {
-                    Toast.makeText(
-                        requireContext(),
-                        response.message,
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    showToast(response.message)
                 }
                 is NetworkResult.Loading -> {
-//
                 }
             }
         })
@@ -157,27 +129,46 @@ class ProductsFragment : Fragment() {
         mainViewModel.removeProductResult.observe(viewLifecycleOwner, { response ->
             when (response) {
                 is NetworkResult.Success -> {
-                    Log.d("HAHA", "before update adapter")
+
                     mAdapter.removeProduct(response.data!!)
-                    Toast.makeText(
-                        requireContext(),
-                        "Removed product successfully!",
-                        Toast.LENGTH_SHORT
-                    ).show()
-//                        findNavController().navigate(R.id.action_registerFragment_to_productsFragment)
+                    showToast(getString(R.string.remove_product_success))
                 }
                 is NetworkResult.Error -> {
-                    Toast.makeText(
-                        requireContext(),
-                        response.message,
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    showToast(response?.message)
                 }
                 is NetworkResult.Loading -> {
-//
+
                 }
             }
         })
+
+        mainViewModel.searchProductResult.observe(viewLifecycleOwner, { response ->
+            if (response.data == null) {
+                binding.recyclerview.visibility = View.GONE
+            } else {
+                val list = mutableListOf<Product>(response.data!!)
+                when (response) {
+                    is NetworkResult.Success -> {
+                        mAdapter.addHeaderAndSubmitList(list, mainViewModel.token.isNullOrEmpty())
+                    }
+                    is NetworkResult.Error -> {
+                        showToast(response?.message)
+                    }
+                    is NetworkResult.Loading -> {
+                    }
+                }
+            }
+        })
+    }
+
+    private fun setUpClickListeners() {
+        binding.registerBtn.setOnClickListener {
+            findNavController().navigate(R.id.action_productsFragment_to_registerFragment)
+        }
+
+        binding.loginBtn.setOnClickListener {
+            findNavController().navigate(R.id.action_productsFragment_to_loginFragment)
+        }
 
         binding.addProductBtn.setOnClickListener({
             AddProductDialogFragment().show(
@@ -193,35 +184,14 @@ class ProductsFragment : Fragment() {
                 mainViewModel.searchProducts(mainViewModel.token, searchQuery)
             }
         })
+    }
 
-        mainViewModel.searchProductResult.observe(viewLifecycleOwner, { response ->
-            if (response.data == null) {
-
-            } else {
-                val list = mutableListOf<Product>(response.data!!)
-
-                when (response) {
-                    is NetworkResult.Success -> {
-                        mAdapter.addHeaderAndSubmitList(list, mainViewModel.token.isNullOrEmpty())
-//                        findNavController().navigate(R.id.action_registerFragment_to_productsFragment)
-                    }
-                    is NetworkResult.Error -> {
-//                    Toast.makeText(
-//                        requireContext(),
-//                        response.message,
-//                        Toast.LENGTH_SHORT
-//                    ).show()
-                    }
-                    is NetworkResult.Loading -> {
-//
-                    }
-                }
-            }
-
-
-        })
-
-        return binding.root
+    private fun showToast(message: String?) {
+        Toast.makeText(
+            requireContext(),
+            message,
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     private fun setupRecyclerView() {

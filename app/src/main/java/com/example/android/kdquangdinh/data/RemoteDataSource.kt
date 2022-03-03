@@ -31,7 +31,6 @@ class RemoteDataSource @Inject constructor(
     }
 
     suspend fun addProduct(token: String?, product: Product): Response<Product> {
-        Log.d("HAHA", "token is: " + token)
         return productsApi.addProduct(
             "Bearer " + token,
             product_name = product.productName,

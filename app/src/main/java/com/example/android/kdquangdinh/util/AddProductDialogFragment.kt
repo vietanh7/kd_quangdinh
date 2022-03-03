@@ -31,21 +31,21 @@ class AddProductDialogFragment : DialogFragment() {
         return activity?.let {
             val builder = AlertDialog.Builder(it)
 
-            // Inflate and set the layout for the dialog
-            // Pass null as the parent view because its going in the dialog layout
             builder.setView(binding.root)
-                // Add action buttons
+
                 .setPositiveButton(R.string.ok,
                     DialogInterface.OnClickListener { dialog, id ->
                         try {
-                            mainViewModel.addProduct(mainViewModel.token, Product(
-                                sku = binding.skuEdt.text.toString(),
-                                productName = binding.nameEt.text.toString(),
-                                qty = binding.quantityEt.text.toString().toInt(),
-                                price = binding.priceEt.text.toString().toFloat(),
-                                unit = binding.unitEt.text.toString(),
-                                status = binding.statusEt.text.toString().toInt()
-                            ))
+                            mainViewModel.addProduct(
+                                mainViewModel.token, Product(
+                                    sku = binding.skuEdt.text.toString(),
+                                    productName = binding.nameEt.text.toString(),
+                                    qty = binding.quantityEt.text.toString().toInt(),
+                                    price = binding.priceEt.text.toString().toFloat(),
+                                    unit = binding.unitEt.text.toString(),
+                                    status = binding.statusEt.text.toString().toInt()
+                                )
+                            )
                         } catch (e: Exception) {
 
                         }

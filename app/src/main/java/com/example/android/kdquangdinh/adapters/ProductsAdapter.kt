@@ -42,7 +42,6 @@ class ProductsAdapter(val clickListener: ProductListener) :
     }
 
     fun addProduct(product: Product) {
-
         adapterScope.launch {
             currentItems =
                 (currentItems + mutableListOf(DataItem.ProductItem(product, areButtonsDisabled))) as MutableList<DataItem>
@@ -54,28 +53,12 @@ class ProductsAdapter(val clickListener: ProductListener) :
 
 
     fun updateProduct(product: Product) {
-
         adapterScope.launch {
-//        for (item in currentItems) {
-//            if (item.sku.equals(product.sku)) {
-//
-//            }
-//
-//        }
-            Log.d("HAHA", "before edit size: " + currentItems.size)
             currentItems.forEachIndexed { index, element ->
                 if (element.sku.equals(product.sku)) {
                     currentItems[index] = (DataItem.ProductItem(product, areButtonsDisabled))
                 }
             }
-//            currentItems.filterNot { it ->
-//
-//                if (it.sku.equals(product.sku)) {
-//                    Log.d("HAHA", "find matching ")
-//                }
-//                it.sku.equals(product.sku) }
-//            Log.d("HAHA", "after edit size: " + currentItems.size)
-//            currentItems = currentItems + listOf(DataItem.ProductItem(product, areButtonsDisabled))
             withContext(Dispatchers.Main) {
                 submitList(currentItems)
                 notifyDataSetChanged()
@@ -85,10 +68,8 @@ class ProductsAdapter(val clickListener: ProductListener) :
 
 
     fun removeProduct(product: Product) {
-
         currentItems =
             (currentItems - mutableListOf(DataItem.ProductItem(product, areButtonsDisabled))) as MutableList<DataItem>
-
         adapterScope.launch {
             withContext(Dispatchers.Main) {
                 submitList(currentItems)
@@ -159,7 +140,7 @@ class ProductDiffCallback : DiffUtil.ItemCallback<DataItem>() {
     }
 }
 
-open class ProductListener(public val updateListener: (product: Product) -> Unit, public val removeListener: (productSku: String) -> Unit) {
+open class ProductListener(val updateListener: (product: Product) -> Unit, val removeListener: (productSku: String) -> Unit) {
     fun onUpdateClick(product: Product) = updateListener(product)
     fun onRemoveClick(product: Product) = removeListener(product.sku)
 }
