@@ -42,8 +42,9 @@ class LoginFragment : Fragment() {
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
 
         binding.loginButton.setOnClickListener {
-            val email = binding.emailEdittext.text.toString()
-            val password = binding.passwordEdittext.text.toString()
+            val email = binding.emailEdittext.text.toString().trim()
+            val password = binding.passwordEdittext.text.toString().trim()
+            //TO-DO validate email and password
             mainViewModel.login(email, password)
             mainViewModel.loginResult.observe(viewLifecycleOwner, {response ->
                 when (response) {

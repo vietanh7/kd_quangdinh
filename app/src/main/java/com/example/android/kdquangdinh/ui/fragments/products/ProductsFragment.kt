@@ -20,7 +20,6 @@ import com.example.android.kdquangdinh.models.Product
 import com.example.android.kdquangdinh.util.AddProductDialogFragment
 import com.example.android.kdquangdinh.util.NetworkResult
 import com.example.android.kdquangdinh.util.UpdateProductDialogFragment
-import com.example.android.kdquangdinh.util.observeOnce
 import com.example.android.kdquangdinh.viewmodels.MainViewModel
 
 
@@ -116,9 +115,10 @@ class ProductsFragment : Fragment() {
         mainViewModel.updateProductResult.observe(viewLifecycleOwner, { response ->
             when (response) {
                 is NetworkResult.Success -> {
-                    if (response.data != null)
+                    if (response.data != null) {
                         mAdapter.updateProduct(response.data)
-                    showToast(getString(R.string.update_product_success))
+                        showToast(getString(R.string.update_product_success))
+                    }
                 }
                 is NetworkResult.Error -> {
                     showToast(response.message)
@@ -131,7 +131,6 @@ class ProductsFragment : Fragment() {
         mainViewModel.removeProductResult.observe(viewLifecycleOwner, { response ->
             when (response) {
                 is NetworkResult.Success -> {
-
                     mAdapter.removeProduct(response.data!!)
                     showToast(getString(R.string.remove_product_success))
                 }
