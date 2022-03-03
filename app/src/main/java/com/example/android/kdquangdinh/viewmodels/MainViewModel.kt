@@ -13,6 +13,7 @@ import com.example.android.kdquangdinh.models.LoginResult
 import com.example.android.kdquangdinh.models.Product
 import com.example.android.kdquangdinh.models.RegisterResult
 import com.example.android.kdquangdinh.util.NetworkResult
+import com.example.android.kdquangdinh.util.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,15 +32,15 @@ class MainViewModel @Inject constructor(
     var updatedProduct: Product? = null
 
     /** RETROFIT */
-    var registerResult: MutableLiveData<NetworkResult<RegisterResult>> = MutableLiveData()
-    var loginResult: MutableLiveData<NetworkResult<LoginResult>> = MutableLiveData()
-    var getAllProductsResult: MutableLiveData<NetworkResult<GetAllProductsResult>> =
-        MutableLiveData()
-    var addProductResult: MutableLiveData<NetworkResult<Product>> = MutableLiveData()
-    var removeProductResult: MutableLiveData<NetworkResult<Product>> = MutableLiveData()
-    var searchProductResult: MutableLiveData<NetworkResult<Product>> = MutableLiveData()
-    var updateProductResult: MutableLiveData<NetworkResult<Product>> = MutableLiveData()
-    var error: MutableLiveData<String> = MutableLiveData()
+    var registerResult: SingleLiveEvent<NetworkResult<RegisterResult>> = SingleLiveEvent()
+    var loginResult: SingleLiveEvent<NetworkResult<LoginResult>> = SingleLiveEvent()
+    var getAllProductsResult: SingleLiveEvent<NetworkResult<GetAllProductsResult>> =
+        SingleLiveEvent()
+    var addProductResult: SingleLiveEvent<NetworkResult<Product>> = SingleLiveEvent()
+    var removeProductResult: SingleLiveEvent<NetworkResult<Product>> = SingleLiveEvent()
+    var searchProductResult: SingleLiveEvent<NetworkResult<Product>> = SingleLiveEvent()
+    var updateProductResult: SingleLiveEvent<NetworkResult<Product>> = SingleLiveEvent()
+    var error: SingleLiveEvent<String> = SingleLiveEvent()
 
     /** Share Preference */
     val readToken = dataStoreRepository.readToken
